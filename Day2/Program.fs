@@ -23,7 +23,7 @@ let verifyRowPart1 {Rule=rule;Password=password} =
 
 let verifyRowPart2 {Rule=rule;Password=password} =
      let {minOccurs = min; maxOccurs = max; Letter=char;} = rule;
-     (password.[min] = char || password.[max] = char) && (password.[min] <> password.[max])
+     (password.[min] = char) <> (password.[max] = char)
      
 [<EntryPoint>]
 let main argv =
