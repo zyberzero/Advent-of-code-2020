@@ -1,4 +1,5 @@
 ﻿open System.IO
+open System.Text.RegularExpressions
 
 type PasswordRule =
     { Letter: char
@@ -10,20 +11,14 @@ type PasswordRow =
       Password: string }
 
 let parseRow (row: string): PasswordRow =
-    let parseRule (rule: string) =
-        let parts = rule.Split ' '
-        let char = parts.[1].[0]
-        let occurs = (parts.[0]).Split '-'
-        let min = occurs.[0] |> int
-        let max = occurs.[1] |> int
-        { Letter = char
-          minOccurs = min
-          maxOccurs = max }
+    let matches =
+        Regex.Match(row, "([0-9]+)-([0-9]+) ([a-zA-Z]): (.*)")
 
-    let parts = row.Split ':'
-    let rule = parseRule parts.[0]
-    let password = (parts.[1])
-    { Rule = rule; Password = password }
+    { Rule =
+          { minOccurs = (matches.Groups.[1].Value |> int)
+            maxOccurs = (matches.Groups.[2].Value |> int)
+            Letter = (matches.Groups.[3].Value.[0]) }
+      Password = matches.Groups.[4].Value }
 
 let verifyRowPart1 { Rule = rule; Password = password } =
     let { minOccurs = min; maxOccurs = max; Letter = char } = rule
